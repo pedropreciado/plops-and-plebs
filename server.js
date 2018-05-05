@@ -26,8 +26,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-router.get('account/')
-
 var port = process.env.PORT || 3002;
 
 app.listen(port);
