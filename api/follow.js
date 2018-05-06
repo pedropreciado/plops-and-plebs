@@ -56,3 +56,5 @@ router.route('/follow')
       })
     })
   })
+
+module.exports = router;

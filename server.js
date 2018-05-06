@@ -5,6 +5,10 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 
+const plopRouter = require('./api/plop');
+const followRouter = require('./api/follow');
+const pageRouter = require('./api/page');
+
 let app = express();
 let router = express.Router();
 
@@ -14,6 +18,11 @@ mongoose.connect('mongodb://master_plop:YOUR_PASSWORD@ds115360.mlab.com:15360/pl
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use('/api', plopRouter);
+app.use('/api', followRouter);
+app.use('/api', pageRouter);
+
 
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,7 +35,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-var port = process.env.PORT || 3002;
+var port = 3001;
 
 app.listen(port);
 

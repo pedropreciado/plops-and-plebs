@@ -31,3 +31,5 @@ router.route('/page')
       })
     })
   })
+
+module.exports = router;

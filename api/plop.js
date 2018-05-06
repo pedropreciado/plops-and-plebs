@@ -13,8 +13,9 @@ router.route('/plop')
       res.json(plop);
     })
   })
-  .post(({ body }, res) => {
-    let plop = new Plop(body);
+  .post((req, res) => {
+    console.log(req.body);
+    let plop = new Plop(req.body);
 
     plop.save((err) => {
       if (err)
@@ -26,3 +27,5 @@ router.route('/plop')
       })
     })
   })
+
+module.exports = router;
