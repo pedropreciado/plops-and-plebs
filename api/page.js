@@ -13,23 +13,4 @@ router.route('/page')
       res.json(page);
     })
   })
-  .post(({ body }, res) => {
-    body.pageNumber = 1;
-    body.plebIds = [];
-    body.nextPage = null;
-    body.plopId = body.id
-
-    let page = new Page(body);
-
-    page.save((err) => {
-      if (err)
-      console.log(err);
-
-      res.json({
-        message: 'success!',
-        page
-      })
-    })
-  })
-
 module.exports = router;
