@@ -23,17 +23,29 @@ router.route('/follow')
     let plopId = req.body.plopId;
     let plebId = req.body.plebId;
 
-    Page.findOne({ plopId }, (err, page) => {
+    if (plopId === plebId) {
+      res.json({
+        error: 'Cant be friends with yourself!'
+      })
+
+      return;
+    }
+
+    Plop.findById(req.body.plopId, (err, plop) => {
       if (err)
       console.log(err);
 
-      if (page) {
-        findLastPage(page)
+      Page.findOne({ plopId }, (err, page) => {
+        if (err)
+        console.log(err);
+
+        if (page) {
+          findLastPage(page)
           .then((lastPage) => {
             console.log('current lastpage: ', lastPage);
             let hasPlebs = Boolean(lastPage.plebIds);
 
-            if (hasPlebs && lastPage.plebIds.length === 5) {
+            if (hasPlebs && lastPage.plebIds.length === 5) { // ********* if page has 5 friends
               let newPage = new Page({
                 plebIds: [plebId],
                 nextPage: null
@@ -51,7 +63,7 @@ router.route('/follow')
                   newPage
                 })
               })
-            } else {
+            } else {                                  // ***************** page has < 5 plebs
               lastPage.plebIds.push(plebId);
 
               lastPage.save((err) => {
@@ -63,35 +75,39 @@ router.route('/follow')
               })
             }
           })
-      } else {
-      console.log('page not found');
-      Plop.findById(req.body.plopId, (err, plop) => {
-        if (err) {
-          console.log(err);
+        } else {
+          console.log('page not found');
+          console.log('creating new page ...'); // ************** create first page
+
+          let newPage = new Page({
+            plebIds: [req.body.plebId],
+            nextPage: null,
+            plopId: req.body.plopId
+          })
+
+          newPage.save((err, page) => {
+            if (err)
+            console.log(err);
+
+            res.json({
+              plop,
+              newPage
+            })
+            console.log('page');
+          })
         }
 
-        let newPage = new Page({
-          plebIds: [req.body.plebId],
-          nextPage: null,
-          plopId: req.body.plopId
-        })
+        plop.plebCount += 1;
 
-        newPage.save((err, page) => {
+        plop.save((err) => {
           if (err)
           console.log(err);
 
-          plop.plebCount += 1;
-
-          res.json({
-            plop,
-            newPage
-          })
+          console.log('1 pleb added to ', plop.username);
         })
-
-        })
-      }
+      })
     })
-  })
+})
 
 
 module.exports = router;
