@@ -6,16 +6,32 @@ const Plop = require('../models/plop');
 
 router.route('/plop')
   .get((req, res) => {
-    Plop.findById(req.query.id, (err, plop) => {
-      if (err)
-      console.log(err);
+    if (req.query.id) {
+      Plop.findById(req.query.id, (err, plop) => {
+        if (err)
+        console.log(err);
 
-      res.json(plop);
-    })
+        res.json(plop);
+      })
+    } else {
+      console.log('getting all plops ...');
+
+      Plop.find((err, plops) => {
+        if (err)
+        console.log(err);
+
+        res.json({ plops });
+      })
+    }
   })
   .post((req, res) => {
-    console.log(req.body);
-    let plop = new Plop(req.body);
+    let plebCount = 0;
+    let username = req.body.username;
+
+    let plop = new Plop({
+      username,
+      plebCount
+    });
 
     plop.save((err) => {
       if (err)

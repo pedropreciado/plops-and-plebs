@@ -3,7 +3,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const logger = require('morgan');
 
 const plopRouter = require('./api/plop');
 const followRouter = require('./api/follow');
@@ -12,7 +11,7 @@ const pageRouter = require('./api/page');
 let app = express();
 let router = express.Router();
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
 
 mongoose.connect('mongodb://master_plop:YOUR_PASSWORD@ds115360.mlab.com:15360/plops')
 

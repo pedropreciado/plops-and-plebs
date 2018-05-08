@@ -1,60 +1,97 @@
 let express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+let ObjectId = mongoose.Types.ObjectId;
 
 let Page = require('../models/page');
+let Plop = require('../models/plop');
+
+async function findLastPage(page) {
+  let lastPage = page;
+
+  while (lastPage.nextPage) {
+    lastPage = await Page.findById(lastPage.nextPage, (err) => {
+        console.log(err);
+    })
+  }
+
+  return lastPage;
+}
 
 router.route('/follow')
   .post((req, res) => {
+    let plopId = req.body.plopId;
+    let plebId = req.body.plebId;
 
-    Page.findById(req.query.plopId, (err, page) => {
+    Page.findOne({ plopId }, (err, page) => {
       if (err)
       console.log(err);
 
-      if (page.data.length === 4) {
-        let pageNumber = page.pageNumber + 1;
-        page.nextPage = pageNumber;
+      if (page) {
+        findLastPage(page)
+          .then((lastPage) => {
+            console.log('current lastpage: ', lastPage);
+            let hasPlebs = Boolean(lastPage.plebIds);
 
-        let nextPage = new Page({
-          plebIds: [req.body.plebId],
-          pageNumber,
-          nextPage: null,
-          plopId: page.plopId
-        })
+            if (hasPlebs && lastPage.plebIds.length === 5) {
+              let newPage = new Page({
+                plebIds: [plebId],
+                nextPage: null
+              })
 
-        page.save((err) => {
-          console.log(err);
-        });
+              newPage.save((err, newPage) => {
+                lastPage.nextPage = newPage._id;
 
-        nextPage.save((err) => {
-          console.log(err);
-        });
+                lastPage.save((err) => {
+                  console.log(err);
+                })
 
-        res.json()
+                res.json({
+                  lastPage,
+                  newPage
+                })
+              })
+            } else {
+              lastPage.plebIds.push(plebId);
+
+              lastPage.save((err) => {
+                console.log(err);
+              })
+
+              res.json({
+                lastPage
+              })
+            }
+          })
       } else {
-        page.data.push(plebId);
-        page.save((err) => {
+      console.log('page not found');
+      Plop.findById(req.body.plopId, (err, plop) => {
+        if (err) {
           console.log(err);
+        }
+
+        let newPage = new Page({
+          plebIds: [req.body.plebId],
+          nextPage: null,
+          plopId: req.body.plopId
         })
 
-        res.json({page, nextPage});
+        newPage.save((err, page) => {
+          if (err)
+          console.log(err);
+
+          plop.plebCount += 1;
+
+          res.json({
+            plop,
+            newPage
+          })
+        })
+
+        })
       }
     })
   })
-  .post(({ body }, res) => {
-    body.token = null;
 
-    let page = new Page(body);
-
-    page.save((err) => {
-      if (err)
-      console.log(err);
-
-      res.json({
-        message: 'success!',
-        page
-      })
-    })
-  })
 
 module.exports = router;
