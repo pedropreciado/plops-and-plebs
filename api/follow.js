@@ -45,7 +45,7 @@ router.route('/follow')
             console.log('current lastpage: ', lastPage);
             let hasPlebs = Boolean(lastPage.plebIds);
 
-            if (hasPlebs && lastPage.plebIds.length === 5) { // ********* if page has 5 friends
+            if (hasPlebs && lastPage.plebIds.length === 1) { // ********* if page has 5 friends
               let newPage = new Page({
                 plebIds: [plebId],
                 nextPage: null

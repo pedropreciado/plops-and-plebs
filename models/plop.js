@@ -6,7 +6,8 @@ const PlopSchema = new mongoose.Schema({
   },
   plebCount: {
     type: Number
-  }
+  },
+  plebs: []
 })
 
 const Plop = mongoose.model('Plop', PlopSchema);

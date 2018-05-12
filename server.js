@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const plopRouter = require('./api/plop');
 const followRouter = require('./api/follow');
 const pageRouter = require('./api/page');
+const addUtil = require('./utils/add_to_all');
 
 let app = express();
 let router = express.Router();
@@ -21,6 +22,7 @@ app.use(bodyParser.json());
 app.use('/api', plopRouter);
 app.use('/api', followRouter);
 app.use('/api', pageRouter);
+// app.use('/api', addUtil);
 
 
 app.use(function(req, res, next) {
