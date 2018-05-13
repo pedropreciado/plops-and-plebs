@@ -41,3 +41,13 @@ var port = 3001;
 app.listen(port);
 
 console.log('api listening on: ', port);
+console.log('************* routes *********');
+
+console.log(
+  'GET  /api/plop\n' +
+  'POST /api/plop\n' +
+  'GET  /api/plop/plebs\n' +
+  'GET  /api/page'
+);
+
+console.log('******************************')
