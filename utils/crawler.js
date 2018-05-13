@@ -5,19 +5,23 @@ const localhost = 'http://localhost:3001'
 async function getPlebIds(id) {
   let plebIds = [];
   let { data } = await axios.get(localhost + `/api/plop/plebs?plopId=${id}`);
+
+  if (!data) {
+    return [];
+  }
+
   let nextPage = data.nextPage;
   plebIds = plebIds.concat(data.plebIds);
 
   while (nextPage) {
     let { data } = await axios.get(localhost + `/api/plop/plebs?pageId=${nextPage}`)
+
     nextPage = data.nextPage;
     plebIds = plebIds.concat(data.plebIds);
   }
 
   return plebIds;
 }
-
-
 
 async function fetchPleb(id) {
   if (!!store[id]) {
@@ -28,8 +32,6 @@ async function fetchPleb(id) {
 
   return data;
 }
-
-
 
 async function getPlebs(id) {
   let { data } = await axios.get(`http://localhost:3001/api/plop?id=${id}`)
@@ -77,11 +79,17 @@ let associations = {};
 let store = {};
 
 async function driver() {
-  let result = await getPlebs('5af7948733f0d27863f3a420');
-  
+  let start = new Date();
+  let result = await getPlebs('5af7b4d171627c81c5cf8c0f');
+
   console.log('username:', result.username);
+  console.log('*********************************');
   console.log('result:', result);
+  console.log(result.plebs[0].username, result.plebs[0].plebs);
+  console.log('*********************************');
   console.log('followers:', result.plebs.map((pleb) => { return pleb.username}));
+  console.log('*********************************');
+  console.log('Finished in: ', Date.now() - start);
 }
 
 driver();
